@@ -1,2 +1,1 @@
-# new-customer - no custom ProGuard rules.
-
+# Pijatin Customer V6 - no custom ProGuard rules.
