@@ -10,8 +10,8 @@ android {
         applicationId "com.violets"
         minSdk 24
         targetSdk 34
-        versionCode 11
-        versionName "v11 REAL FIXED"
+        versionCode 13
+        versionName "v13 REAL FIXED"
     }
     buildTypes {
         release {
