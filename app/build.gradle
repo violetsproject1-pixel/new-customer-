@@ -1,11 +1,31 @@
-apply plugin: 'com.google.gms.google-services'
+plugins {
+    id 'com.android.application'
+    id 'com.google.gms.google-services'
+}
 
 android {
-  namespace 'com.violets'  // ← GANTI jadi com.violets bukan com.pijatin.customer!
+    namespace 'com.violets'
+    compileSdk 34
+    defaultConfig {
+        applicationId "com.violets"
+        minSdk 24
+        targetSdk 34
+        versionCode 10
+        versionName "v10 REAL"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-  implementation platform('com.google.firebase:firebase-bom:32.7.0')
-  implementation 'com.google.firebase:firebase-auth'
-  implementation 'com.google.firebase:firebase-firestore'
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
 }
