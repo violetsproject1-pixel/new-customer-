@@ -1,4 +1,4 @@
-package com.pijatin.customer;
+package com.violets;
 
 import android.app.Activity;
 import android.content.Intent;
