@@ -1,4 +1,5 @@
-package com.pijatin.customer;
+package com.violets;
+
 import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -9,7 +10,6 @@ public class MainActivity extends AppCompatActivity {
     private WebView webView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.Theme_AppCompat_Light_NoActionBar);
         super.onCreate(savedInstanceState);
         webView = new WebView(this);
         setContentView(webView);
@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setAllowFileAccess(true);
+        s.setDomStorageEnabled(true);
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl("file:///android_asset/index.html");
     }
