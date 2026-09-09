@@ -1,126 +1,169 @@
 <!DOCTYPE html>
 <html lang="id">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PijatIN Rumah Aja GOLD REAL</title>
-<style>body{margin:0;font-family:sans-serif;background:#FFFBEB;color:#2D4A3E} .gold{background:#2D4A3E;color:#FFD700;padding:12px;text-align:center;font-weight:bold} .card{margin:12px;padding:16px;background:#fff;border-radius:12px;box-shadow:0 2px 8px #0001} input{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box} button{width:100%;padding:14px;background:#2D4A3E;color:#FFD700;border:0;border-radius:10px;font-weight:bold;font-size:16px} .otp{background:#FFEB99;padding:18px;text-align:center;border-radius:10px;margin:10px 0} h1{margin:4px}</style>
+<title>PijatIN Gold FULL</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#FFFBEB;color:#1a3328;padding-bottom:70px}
+.gold{background:#16392E;color:#FFD700;padding:10px;text-align:center;font-weight:bold;font-size:14px;position:sticky;top:0;z-index:10}
+.card{margin:10px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px #0001}
+input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #ccc;box-sizing:border-box}
+button{width:100%;padding:14px;background:#16392E;color:#FFD700;border:0;border-radius:12px;font-weight:bold}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #ddd;z-index:20}
+.nav div{flex:1;text-align:center;padding:10px 2px;font-size:11px}
+.nav .active{color:#16392E;font-weight:bold;background:#FFFBEB}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.svc{background:#16392E;color:#fff;padding:12px;border-radius:12px;text-align:center}
+.badge{background:#FFD700;color:#16392E;padding:3px 8px;border-radius:20px;font-weight:bold;font-size:12px}
+</style>
 </head>
 <body>
-<div class="gold">PijatIN Rumah Aja MEMBER GOLD • ORD-8393330346 • REAL Firebase</div>
-<div class="card" id="root">
-<h3>Daftar REAL - Firebase Auth REST</h3>
+<div class="gold" id="topGold">PijatIN Rumah Aja • MEMBER GOLD ORD-8393330346 • REAL Firebase</div>
+
+<!-- LOGIN -->
+<div id="pageLogin" class="card">
+<h3>Daftar / Masuk REAL</h3>
 <input id="nama" placeholder="Nama" value="maliki">
 <input id="hp" placeholder="HP" value="083893330346">
 <input id="email" placeholder="Email" value="malikysyachmal2018@gmail.com">
 <input id="pass" type="password" placeholder="Password" value="123456">
-<div class="otp"><h1>263912</h1><small>KODE TEST (OTP Dummy)</small></div>
-<button onclick="daftarReal()">Verifikasi & Buat Akun REAL</button>
-<div id="log" style="margin-top:10px;font-size:12px;white-space:pre-wrap"></div>
+<button onclick="daftarReal()">Verifikasi & Masuk</button>
+<div id="log" style="font-size:11px;margin-top:8px;white-space:pre-wrap"></div>
+</div>
+
+<!-- APP -->
+<div id="pageApp" style="display:none">
+  <!-- BERANDA -->
+  <div id="tabBeranda">
+    <div class="card">
+      <div><span class="badge" id="goldBadge">ORD-8393330346 GOLD</span></div>
+      <h2 style="margin:6px 0" id="hiNama">Halo, maliki</h2>
+      <small id="hiEmail">malikysyachmal2018@gmail.com • 083893330346</small>
+      <p style="background:#FFFBEB;padding:8px;border-radius:8px">📍 Ciledug, Tangerang -6.2416,106.9923 • UID: <span id="hiUid"></span></p>
+    </div>
+    <div class="card"><b>Layanan Pijat</b><div class="grid" style="margin-top:8px">
+      <div class="svc" onclick="buatOrder('Full Body 90m')">💆 Full Body<br><small>90m - 150k</small></div>
+      <div class="svc" onclick="buatOrder('Refleksi 60m')">🦶 Refleksi<br><small>60m - 100k</small></div>
+      <div class="svc" onclick="buatOrder('Kerik 45m')">✨ Kerik<br><small>45m - 80k</small></div>
+      <div class="svc" onclick="buatOrder('Lulur 60m')">🧖 Lulur<br><small>60m - 120k</small></div>
+    </div></div>
+    <div class="card" id="mitraBox"><b>Therapist ONLINE REAL (isOnline=true)</b><div id="mitraList">Loading...</div></div>
+  </div>
+
+  <!-- PESANAN -->
+  <div id="tabPesanan" style="display:none"><div class="card"><b>Pesanan Aktif</b><div id="pesananList">Belum ada pesanan. Buat di Beranda.</div></div></div>
+
+  <!-- RIWAYAT -->
+  <div id="tabRiwayat" style="display:none"><div class="card"><b>Riwayat</b><div id="riwayatList">Riwayat kosong. Firestore: orders where status=done</div></div></div>
+
+  <!-- PROFIL -->
+  <div id="tabProfil" style="display:none">
+    <div class="card">
+      <b>Profil MEMBER GOLD</b>
+      <p id="profilDetail"></p>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div id="nBeranda" class="active" onclick="showTab('Beranda')">🏠<br>Beranda</div>
+    <div id="nPesanan" onclick="showTab('Pesanan')">📦<br>Pesanan</div>
+    <div id="nRiwayat" onclick="showTab('Riwayat')">📜<br>Riwayat</div>
+    <div id="nProfil" onclick="showTab('Profil')">👤<br>Profil</div>
+  </div>
 </div>
 
 <script>
-const CFG={
-  apiKey:"AIzaSyAsSbAM4i1qRbh69faFWlUT--AIdQ6fjhA",
-  projectId:"pijatin-7cfb0"
-};
+const CFG={apiKey:"AIzaSyAsSbAM4i1qRbh69faFWlUT--AIdQ6fjhA",projectId:"pijatin-7cfb0"};
 const ORD="ORD-8393330346";
-const log=(m)=>document.getElementById('log').textContent+=m+"\n";
+const log=m=>document.getElementById('log').textContent+=m+"\n";
+let idToken, uid, userData={};
+
+function showTab(t){
+  ['Beranda','Pesanan','Riwayat','Profil'].forEach(x=>{
+    document.getElementById('tab'+x).style.display=x===t?'block':'none';
+    document.getElementById('n'+x).classList.toggle('active',x===t);
+  });
+  if(t==='Pesanan') loadOrders(false);
+  if(t==='Riwayat') loadOrders(true);
+}
 
 async function daftarReal(){
-  const nama=document.getElementById('nama').value||'maliki';
-  const hp=document.getElementById('hp').value||'083893330346';
-  const email=document.getElementById('email').value||'malikysyachmal2018@gmail.com';
-  const pass=document.getElementById('pass').value||'123456';
-  log("Daftar "+email+"...");
-  
-  // 1. Coba SignUp via REST (bypass file:// origin check!)
-  let idToken, localId;
+  const nama=document.getElementById('nama').value, hp=document.getElementById('hp').value;
+  const email=document.getElementById('email').value, pass=document.getElementById('pass').value;
+  log("Auth "+email+" ...");
   try{
-    let r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${CFG.apiKey}`,{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({email,password:pass,returnSecureToken:true})
-    });
+    let r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${CFG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password:pass,returnSecureToken:true})});
     let j=await r.json();
-    if(j.error){
-      if(j.error.message.includes("EMAIL_EXISTS")){
-        log("Email sudah ada, coba SignIn...");
-        let r2=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${CFG.apiKey}`,{
-          method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({email,password:pass,returnSecureToken:true})
-        });
-        let j2=await r2.json();
-        if(j2.error) throw j2.error;
-        idToken=j2.idToken; localId=j2.localId;
-      }else throw j.error;
-    }else{
-      idToken=j.idToken; localId=j.localId;
-    }
-    log("AUTH OK uid="+localId);
-
-    // 2. Simpan ke Firestore customers/{uid} via REST
-    let fsUrl=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${localId}?key=${CFG.apiKey}`;
-    let payload={fields:{
-      nama:{stringValue:nama},
-      hp:{stringValue:hp},
-      email:{stringValue:email},
-      memberGold:{stringValue:ORD},
-      cLat:{doubleValue:-6.2416},
-      cLng:{doubleValue:106.9923},
-      createdAt:{timestampValue:new Date().toISOString()}
-    }};
-    let rf=await fetch(fsUrl,{
-      method:"PATCH",
-      headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},
-      body:JSON.stringify(payload)
-    });
-    let jf=await rf.json();
-    log("Firestore OK: "+JSON.stringify(jf.name||"saved"));
-
-    // 3. Simpan session & tampilkan HOME GOLD REAL
-    localStorage.setItem("pijatin_uid",localId);
-    localStorage.setItem("pijatin_gold",ORD);
-    document.getElementById('root').innerHTML=`
-      <h2>✅ SUKSES REAL Firebase!</h2>
-      <p><b>${nama}</b> • ${hp}<br>${email}<br><b style="color:#2D4A3E;background:#FFD700;padding:4px 8px;border-radius:6px">${ORD} MEMBER GOLD</b></p>
-      <p>UID: ${localId}</p>
-      <button onclick="location.reload()">Lanjut ke Home</button>
-      <hr>
-      <div id="mitraList">Load therapist REAL isOnline==true...</div>
-    `;
-    loadMitraReal(idToken);
-  }catch(e){
-    log("ERROR: "+JSON.stringify(e));
-    alert("Error: "+(e.message||JSON.stringify(e)));
-  }
+    if(j.error && j.error.message.includes("EMAIL_EXISTS")){
+      let r2=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${CFG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password:pass,returnSecureToken:true})});
+      j=await r2.json();
+      if(j.error) throw j.error;
+    }else if(j.error) throw j.error;
+    idToken=j.idToken; uid=j.localId;
+    localStorage.setItem("pijatin_token",idToken); localStorage.setItem("pijatin_uid",uid);
+    localStorage.setItem("pijatin_nama",nama); localStorage.setItem("pijatin_hp",hp); localStorage.setItem("pijatin_email",email);
+    await saveCustomer(nama,hp,email);
+    masukApp();
+  }catch(e){log("ERROR "+JSON.stringify(e)); alert(e.message||JSON.stringify(e));}
 }
-
-async function loadMitraReal(idToken){
+async function saveCustomer(nama,hp,email){
+  let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;
+  let payload={fields:{nama:{stringValue:nama},hp:{stringValue:hp},email:{stringValue:email},memberGold:{stringValue:ORD},cLat:{doubleValue:-6.2416},cLng:{doubleValue:106.9923}}};
+  await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(payload)});
+}
+function masukApp(){
+  uid=localStorage.getItem("pijatin_uid"); idToken=localStorage.getItem("pijatin_token");
+  userData={nama:localStorage.getItem("pijatin_nama")||"maliki",hp:localStorage.getItem("pijatin_hp")||"083893330346",email:localStorage.getItem("pijatin_email")||""};
+  document.getElementById('pageLogin').style.display='none';
+  document.getElementById('pageApp').style.display='block';
+  document.getElementById('hiNama').textContent="Halo, "+userData.nama;
+  document.getElementById('hiEmail').textContent=userData.email+" • "+userData.hp;
+  document.getElementById('hiUid').textContent=uid;
+  document.getElementById('goldBadge').textContent=ORD+" MEMBER GOLD";
+  document.getElementById('profilDetail').innerHTML=`${userData.nama}<br>${userData.email}<br>${userData.hp}<br><br><span class="badge">${ORD} GOLD</span><br><br>UID: ${uid}`;
+  showTab('Beranda'); loadMitra();
+}
+async function loadMitra(){
   try{
-    // Query mitras where isOnline==true
-    let qUrl=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`;
-    let body={
-      structuredQuery:{
-        from:[{collectionId:"mitras"}],
-        where:{fieldFilter:{field:{fieldPath:"isOnline"},op:"EQUAL",value:{booleanValue:true}}},
-        limit:20
-      }
-    };
-    let r=await fetch(qUrl,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)});
-    let j=await r.json();
-    let html="";
+    let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`;
+    let body={structuredQuery:{from:[{collectionId:"mitras"}],where:{fieldFilter:{field:{fieldPath:"isOnline"},op:"EQUAL",value:{booleanValue:true}}},limit:20}};
+    let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)});
+    let j=await r.json(); let html="";
     (j||[]).forEach(d=>{
       if(!d.document) return;
-      let f=d.document.fields||{};
-      let nama=f.nama?f.nama.stringValue:"Therapist";
-      // Filter: hapus Siti Rahayu dummy
+      let f=d.document.fields; let nama=f.nama?.stringValue||"Therapist";
       if(nama.toLowerCase().includes("siti rahayu")) return;
-      html+=`<div class="card">${nama} • ONLINE ✅</div>`;
+      html+=`<div style="border:1px solid #eee;padding:8px;border-radius:8px;margin:6px 0">✅ ${nama} - ONLINE</div>`;
     });
-    if(!html) html="<div class='card'>Belum ada mitra ONLINE REAL. Tambah di Firestore mitras isOnline=true</div>";
+    if(!html) html=`<div style="padding:8px;color:#666">Belum ada mitra ONLINE REAL. Buat di Firestore Console: Collection <b>mitras</b> > Add doc > nama: "Ayu" , isOnline: boolean true , lat: -6.24 , lng: 106.99</div>`;
     document.getElementById('mitraList').innerHTML=html;
-  }catch(e){
-    document.getElementById('mitraList').innerHTML="Error load mitra: "+e;
-  }
+  }catch(e){document.getElementById('mitraList').innerHTML="Error: "+e;}
 }
+async function buatOrder(layanan){
+  let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/orders?key=${CFG.apiKey}`;
+  let payload={fields:{customerId:{stringValue:uid},nama:{stringValue:userData.nama},layanan:{stringValue:layanan},status:{stringValue:"menunggu"},orderCode:{stringValue:ORD},createdAt:{timestampValue:new Date().toISOString()}}};
+  let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(payload)});
+  alert("Pesanan "+layanan+" dibuat! "+ORD); showTab('Pesanan');
+}
+async function loadOrders(isRiwayat){
+  let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`;
+  let statusVal=isRiwayat?"done":"menunggu";
+  // simple: list all orders then filter client side for demo
+  let body={structuredQuery:{from:[{collectionId:"orders"}],limit:20}};
+  let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)});
+  let j=await r.json(); let html="";
+  (j||[]).forEach(d=>{
+    if(!d.document) return;
+    let f=d.document.fields; if(f.customerId?.stringValue!==uid) return;
+    if(!isRiwayat && f.status?.stringValue==="done") return;
+    if(isRiwayat && f.status?.stringValue!=="done") return;
+    html+=`<div style="border:1px solid #ddd;padding:8px;border-radius:8px;margin:6px 0"><b>${f.layanan?.stringValue}</b><br>Status: ${f.status?.stringValue}<br><small>${f.orderCode?.stringValue}</small></div>`;
+  });
+  if(!html) html=isRiwayat?"Belum ada riwayat selesai.":"Belum ada pesanan aktif. Buat di Beranda.";
+  document.getElementById(isRiwayat?'riwayatList':'pesananList').innerHTML=html;
+}
+function logout(){localStorage.clear(); location.reload();}
+(function(){if(localStorage.getItem("pijatin_uid")){idToken=localStorage.getItem("pijatin_token"); uid=localStorage.getItem("pijatin_uid"); masukApp();}})();
 </script>
 </body>
 </html>
