@@ -1,81 +1,171 @@
 <!DOCTYPE html>
 <html lang="id">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PijatIN 7 Layanan</title>
+<title>PijatIN Saldo Real</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 body{margin:0;font-family:sans-serif;background:#FFFBEB;color:#1a3328;padding-bottom:70px}
-.gold{background:#16392E;color:#FFD700;padding:10px;text-align:center;font-weight:bold;position:sticky;top:0;z-index:10}
+.gold{background:#16392E;color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.gold .left{font-weight:bold;color:#FFD700}
+.gold .right{display:flex;gap:10px;align-items:center}
+.saldo{background:#FFD700;color:#16392E;padding:5px 10px;border-radius:20px;font-weight:bold;font-size:13px}
+.bell{position:relative;font-size:20px}
+.bell .dot{position:absolute;top:0;right:0;background:red;width:8px;height:8px;border-radius:50%}
 .card{margin:10px;background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 8px #0001}
 input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #ccc;box-sizing:border-box}
 button{width:100%;padding:12px;background:#16392E;color:#FFD700;border:0;border-radius:10px;font-weight:bold;margin-top:6px}
 button.sm{width:auto;padding:6px 12px;font-size:12px;margin:4px}
+button:disabled{background:#999;color:#eee}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #ddd;z-index:20}
 .nav div{flex:1;text-align:center;padding:8px 2px;font-size:11px}
 .nav .active{background:#FFFBEB;font-weight:bold}
-#map{height:280px;border-radius:12px}
-.badge{background:#FFD700;color:#16392E;padding:4px 8px;border-radius:20px;font-size:12px;font-weight:bold}
+#map{height:260px;border-radius:12px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.svc{background:#16392E;color:#fff;padding:14px 8px;border-radius:12px;text-align:center;line-height:1.3}
+.svc{background:#16392E;color:#fff;padding:12px 8px;border-radius:12px;text-align:center;line-height:1.3}
 .svc b{color:#FFD700}
-.svc small{opacity:.9}
+.topup{border:1px solid #FFD700;background:#FFFBEB;padding:8px;border-radius:8px;text-align:center}
 </style>
 </head>
 <body>
-<div class="gold">PijatIN Rumah Aja • GOLD ORD-8393330346 • 7 Layanan REAL</div>
+<div class="gold">
+  <div class="left">PijatIN Rumah Aja</div>
+  <div class="right">
+    <div class="saldo" id="saldoHeader" onclick="showTab('Profil')">Rp 0</div>
+    <div class="bell" onclick="openNotif()">🔔<div class="dot"></div></div>
+  </div>
+</div>
 
-<div id="pageLogin" class="card"><h3>Masuk REAL</h3><input id="email" placeholder="Email" value="malikysyachmal2018@gmail.com"><input id="pass" type="password" placeholder="Pass" value="123456"><button onclick="loginReal()">Masuk REAL</button><div id="log" style="font-size:11px"></div></div>
-<div id="pageDaftar" class="card" style="display:none"><h3>Daftar REAL</h3><input id="nama" placeholder="Nama" value="maliki"><input id="hp" placeholder="HP" value="083893330346"><input id="emailD" placeholder="Email" value="malikysyachmal2018@gmail.com"><input id="passD" type="password" value="123456"><button onclick="daftarReal()">Daftar</button><button onclick="showLogin()" style="background:#eee;color:#333">Login</button></div>
+<div id="pageLogin" class="card"><h3>Masuk REAL</h3><input id="email" placeholder="Email" value="malikysyachmal2018@gmail.com"><input id="pass" type="password" value="123456"><button onclick="loginReal()">Masuk REAL</button><div id="log" style="font-size:11px"></div></div>
+<div id="pageDaftar" class="card" style="display:none"><h3>Daftar REAL</h3><input id="nama" placeholder="Nama" value="maliki"><input id="hp" placeholder="HP" value="083893330346"><input id="emailD" placeholder="Email"><input id="passD" type="password" value="123456"><button onclick="daftarReal()">Daftar</button></div>
 
 <div id="pageApp" style="display:none">
 <div id="tabBeranda">
 <div class="card">
-<span class="badge">ORD-8393330346 GOLD</span> <b id="hiNama"></b><br><small id="hiEmail"></small>
-<div style="margin:8px 0;padding:8px;background:#16392E;color:#FFD700;border-radius:8px;font-size:12px">📍 Geser PIN atau TAP PETA untuk titik rumah!</div>
-<div id="map"></div>
-<div style="display:flex;gap:6px;margin-top:6px"><button class="sm" onclick="gpsReal()">📡 GPS Saya</button><button class="sm" onclick="saveLokasi()" style="background:#FFD700;color:#16392E">💾 Simpan Lokasi</button></div>
-<div style="font-size:11px;margin-top:6px;background:#FFFBEB;padding:6px;border-radius:6px">LatLng: <span id="hiLatLng"></span> • <span id="hiUid"></span><br>Status: <span id="locStatus">Pin bisa digeser</span></div>
+  <b id="hiNama"></b><br><small id="hiEmail" style="color:#666"></small>
+  <div style="margin:8px 0;padding:8px;background:#16392E;color:#FFD700;border-radius:8px;font-size:12px">📍 Geser PIN atau TAP PETA untuk titik rumah!</div>
+  <div id="map"></div>
+  <div style="display:flex;gap:6px;margin-top:6px"><button class="sm" onclick="gpsReal()">📡 GPS Saya</button><button class="sm" onclick="saveLokasi()" style="background:#FFD700;color:#16392E">💾 Simpan Lokasi</button></div>
+  <div style="display:none"><span id="hiLatLng"></span><span id="hiUid"></span><span id="locStatus"></span></div>
 </div>
-
-<!-- UPDATE 7 LAYANAN SESUAI REQUEST -->
-<div class="card">
-<b>Layanan Pijat (7 Menu REAL)</b>
-<div class="grid" style="margin-top:10px">
+<div class="card"><b>Layanan Pijat</b><div class="grid" style="margin-top:10px">
   <div class="svc" onclick="buatOrder('Tradisional 60m',120000)"><b>Tradisional</b><br>60' - 120k</div>
-  <div class="svc" onclick="buatOrder('Tradisional + Kerokan 75m',135000)" style="background:#1e4d3a"><b>+Kerokan</b><br>75' - 135k</div>
+  <div class="svc" onclick="buatOrder('Tradisional 60m'+Kerokan 75m',135000)"><b>+Kerokan</b><br>75' - 135k</div>
   <div class="svc" onclick="buatOrder('Full Body 90m',150000)"><b>Full Body</b><br>90' - 150k</div>
   <div class="svc" onclick="buatOrder('Reflexology 60m',75000)"><b>Reflexology</b><br>60' - 75k</div>
-  <div class="svc" onclick="buatOrder('Pijat Anak 60m',120000)"><b>Anak</b><br>60' - 120k</div>
+  <div class="svc" onclick="buatOrder('Anak 60m',120000)"><b>Anak</b><br>60' - 120k</div>
   <div class="svc" onclick="buatOrder('Laktasi 75m',135000)"><b>Laktasi</b><br>75' - 135k</div>
-  <div class="svc" onclick="buatOrder('Ibu Hamil 75m',135000)" style="grid-column: span 2; background:#2a5a45"><b>Ibu Hamil</b><br>75' - 135k • Spesial</div>
-</div>
-</div>
-
+  <div class="svc" onclick="buatOrder('Ibu Hamil 75m',135000)" style="grid-column:span 2;background:#2a5a45"><b>Ibu Hamil</b><br>75' - 135k</div>
+</div></div>
 <div class="card"><b>Therapist ONLINE REAL</b><div id="mitraList"></div></div>
 </div>
+
 <div id="tabPesanan" style="display:none"><div class="card"><b>Pesanan Aktif</b><div id="pesananList"></div></div></div>
 <div id="tabRiwayat" style="display:none"><div class="card"><b>Riwayat</b><div id="riwayatList"></div></div></div>
-<div id="tabProfil" style="display:none"><div class="card"><b>Profil GOLD</b><p id="profilDetail"></p><button onclick="logout()">Logout → Login REAL</button></div></div>
+
+<div id="tabProfil" style="display:none">
+  <div class="card">
+    <b>Profil</b><p id="profilDetail"></p>
+    <div style="background:#16392E;color:#fff;padding:12px;border-radius:10px;margin:10px 0">
+      💰 Saldo REAL Firestore<br>
+      <span style="font-size:22px;font-weight:bold;color:#FFD700" id="saldoProfil">Rp 0</span><br>
+      <small>UID: <span id="profilUid"></span></small>
+    </div>
+    <b>Topup Saldo REAL</b>
+    <div class="grid" style="margin:8px 0">
+      <div class="topup" onclick="topupSaldo(50000)">+50k</div>
+      <div class="topup" onclick="topupSaldo(100000)">+100k</div>
+      <div class="topup" onclick="topupSaldo(150000)">+150k</div>
+      <div class="topup" onclick="topupSaldo(200000)">+200k</div>
+    </div>
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+
 <div class="nav"><div id="nBeranda" class="active" onclick="showTab('Beranda')">🏠<br>Beranda</div><div id="nPesanan" onclick="showTab('Pesanan')">📦<br>Pesanan</div><div id="nRiwayat" onclick="showTab('Riwayat')">📜<br>Riwayat</div><div id="nProfil" onclick="showTab('Profil')">👤<br>Profil</div></div>
+</div>
+
+<div id="notifBox" style="display:none;position:fixed;top:50px;right:10px;left:10px;background:#fff;border-radius:12px;padding:12px;box-shadow:0 4px 20px #0003;z-index:99">
+<b>🔔 Notifikasi</b><div style="font-size:13px;margin-top:8px" id="notifContent"></div><button onclick="document.getElementById('notifBox').style.display='none'" style="background:#eee;color:#333;margin-top:8px">Tutup</button>
 </div>
 
 <script>
 const CFG={apiKey:"AIzaSyAsSbAM4i1qRbh69faFWlUT--AIdQ6fjhA",projectId:"pijatin-7cfb0"};
 const ORD="ORD-8393330346";
-let idToken,uid,map,markerCustomer,curLat=-6.2416,curLng=106.9923;
+let idToken,uid,map,markerCustomer,curLat=-6.210243,curLng=106.666367,saldo=0;
 function showLogin(){document.getElementById('pageLogin').style.display='block';document.getElementById('pageDaftar').style.display='none';}
 function showTab(t){['Beranda','Pesanan','Riwayat','Profil'].forEach(x=>{document.getElementById('tab'+x).style.display=x===t?'block':'none';document.getElementById('n'+x).classList.toggle('active',x===t);}); if(t==='Beranda'&&map) setTimeout(()=>map.invalidateSize(),200); if(t==='Pesanan') loadOrders(false); if(t==='Riwayat') loadOrders(true);}
+function openNotif(){document.getElementById('notifContent').innerHTML=`Saldo REAL: Rp ${saldo.toLocaleString('id-ID')}<br>• ORDER ${ORD} aktif<br>• Lokasi: ${curLat.toFixed(5)},${curLng.toFixed(5)}`; document.getElementById('notifBox').style.display='block';}
 async function loginReal(){let e=document.getElementById('email').value,p=document.getElementById('pass').value; let r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${CFG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:e,password:p,returnSecureToken:true})}); let j=await r.json(); if(j.error) return alert(j.error.message); idToken=j.idToken;uid=j.localId;localStorage.setItem("pijatin_token",idToken);localStorage.setItem("pijatin_uid",uid);localStorage.setItem("pijatin_email",e); masukApp();}
-async function daftarReal(){let n=document.getElementById('nama').value,h=document.getElementById('hp').value,e=document.getElementById('emailD').value,p=document.getElementById('passD').value; let r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${CFG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:e,password:p,returnSecureToken:true})}); let j=await r.json(); if(j.error) return alert(j.error.message); idToken=j.idToken;uid=j.localId;localStorage.setItem("pijatin_token",idToken);localStorage.setItem("pijatin_uid",uid);localStorage.setItem("pijatin_nama",n);localStorage.setItem("pijatin_hp",h);localStorage.setItem("pijatin_email",e); let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`; await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{nama:{stringValue:n},hp:{stringValue:h},email:{stringValue:e},memberGold:{stringValue:ORD},cLat:{doubleValue:curLat},cLng:{doubleValue:curLng}}})}); masukApp();}
-function masukApp(){uid=localStorage.getItem("pijatin_uid"); idToken=localStorage.getItem("pijatin_token"); let n=localStorage.getItem("pijatin_nama")||"maliki",h=localStorage.getItem("pijatin_hp")||"083893330346",e=localStorage.getItem("pijatin_email")||""; curLat=parseFloat(localStorage.getItem("pijatin_lat")||-6.21359); curLng=parseFloat(localStorage.getItem("pijatin_lng")||106.66660); document.getElementById('pageLogin').style.display='none';document.getElementById('pageDaftar').style.display='none';document.getElementById('pageApp').style.display='block';document.getElementById('hiNama').textContent="Halo, "+n;document.getElementById('hiEmail').textContent=e+" • "+h;document.getElementById('hiUid').textContent="UID: "+uid;document.getElementById('hiLatLng').textContent=curLat.toFixed(5)+","+curLng.toFixed(5);document.getElementById('profilDetail').innerHTML=`${n}<br>${e}<br>${h}<br><br><span class="badge">${ORD} GOLD</span><br>UID:${uid}<br>Lokasi: ${curLat.toFixed(5)},${curLng.toFixed(5)}`; showTab('Beranda'); setTimeout(initMap,300); loadMitra();}
-function initMap(){if(map){map.remove();map=null;} map=L.map('map').setView([curLat,curLng],15); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(map); markerCustomer=L.marker([curLat,curLng],{draggable:true}).addTo(map).bindPopup("Rumah Anda<br>Geser pin ini!").openPopup(); markerCustomer.on('dragend',e=>{let ll=e.target.getLatLng();curLat=ll.lat;curLng=ll.lng;updateLatLng();}); map.on('click',e=>{curLat=e.latlng.lat;curLng=e.latlng.lng;markerCustomer.setLatLng([curLat,curLng]);updateLatLng();});}
-function updateLatLng(){document.getElementById('hiLatLng').textContent=curLat.toFixed(6)+","+curLng.toFixed(6);document.getElementById('locStatus').textContent="Pin digeser! Klik Simpan Lokasi";localStorage.setItem("pijatin_lat",curLat);localStorage.setItem("pijatin_lng",curLng);}
+async function daftarReal(){let n=document.getElementById('nama').value,h=document.getElementById('hp').value,e=document.getElementById('emailD').value,p=document.getElementById('passD').value; let r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${CFG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:e,password:p,returnSecureToken:true})}); let j=await r.json(); if(j.error) return alert(j.error.message); idToken=j.idToken;uid=j.localId;localStorage.setItem("pijatin_token",idToken);localStorage.setItem("pijatin_uid",uid);localStorage.setItem("pijatin_nama",n);localStorage.setItem("pijatin_hp",h);localStorage.setItem("pijatin_email",e); let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`; await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{nama:{stringValue:n},hp:{stringValue:h},email:{stringValue:e},memberGold:{stringValue:ORD},saldo:{integerValue:50000},cLat:{doubleValue:curLat},cLng:{doubleValue:curLng}}})}); masukApp();}
+async function masukApp(){uid=localStorage.getItem("pijatin_uid"); idToken=localStorage.getItem("pijatin_token"); let n=localStorage.getItem("pijatin_nama")||"maliki",h=localStorage.getItem("pijatin_hp")||"083893330346",e=localStorage.getItem("pijatin_email")||"malikysyachmal2018@gmail.com"; curLat=parseFloat(localStorage.getItem("pijatin_lat")||-6.210243); curLng=parseFloat(localStorage.getItem("pijatin_lng")||106.666367); document.getElementById('pageLogin').style.display='none';document.getElementById('pageDaftar').style.display='none';document.getElementById('pageApp').style.display='block';document.getElementById('hiNama').textContent="Halo, "+n;document.getElementById('hiEmail').textContent=e;document.getElementById('profilDetail').innerHTML=`${n}<br>${e}<br>${h}`;document.getElementById('profilUid').textContent=uid.substring(0,12)+"..."; showTab('Beranda'); setTimeout(initMap,300); await loadSaldoReal(); loadMitra();}
+
+async function loadSaldoReal(){
+ try{
+  let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;
+  let r=await fetch(url,{headers:{"Authorization":"Bearer "+idToken}});
+  let j=await r.json();
+  let s=j.fields?.saldo?.integerValue || j.fields?.saldo?.doubleValue || 0;
+  saldo=parseInt(s)||0;
+  // kalau belum ada saldo, kasih 50k awal
+  if(saldo===0){
+    saldo=50000;
+    await updateSaldoFirestore(saldo);
+  }
+  renderSaldo();
+ }catch(e){ saldo=50000; renderSaldo(); }
+}
+function renderSaldo(){
+ document.getElementById('saldoHeader').textContent="Rp "+saldo.toLocaleString('id-ID');
+ document.getElementById('saldoProfil').textContent="Rp "+saldo.toLocaleString('id-ID');
+}
+async function updateSaldoFirestore(newSaldo){
+ let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?updateMask.fieldPaths=saldo&key=${CFG.apiKey}`;
+ let payload={fields:{saldo:{integerValue:newSaldo}}};
+ // pakai PATCH dengan merge
+ let fullUrl=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;
+ // ambil dulu lalu patch saldo saja biar gak hilang field lain
+ try{
+  await fetch(fullUrl,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{saldo:{integerValue:newSaldo}}})});
+  saldo=newSaldo; renderSaldo();
+ }catch(e){alert("Gagal update saldo: "+e);}
+}
+
+async function topupSaldo(jumlah){
+ if(!confirm(`Topup Rp ${jumlah.toLocaleString('id-ID')} ?`)) return;
+ let newSaldo=saldo+jumlah;
+ await updateSaldoFirestore(newSaldo);
+ alert(`✅ Topup REAL berhasil! Saldo sekarang Rp ${newSaldo.toLocaleString('id-ID')}`);
+ // simpan history topup
+ let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/topups?key=${CFG.apiKey}`;
+ let payload={fields:{customerId:{stringValue:uid},jumlah:{integerValue:jumlah},saldoAkhir:{integerValue:newSaldo},createdAt:{timestampValue:new Date().toISOString()}}};
+ await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(payload)});
+}
+
+function initMap(){if(map){map.remove();map=null;} map=L.map('map').setView([curLat,curLng],15); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(map); markerCustomer=L.marker([curLat,curLng],{draggable:true}).addTo(map).bindPopup("Rumah Anda").openPopup(); markerCustomer.on('dragend',e=>{let ll=e.target.getLatLng();curLat=ll.lat;curLng=ll.lng;updateLatLng();}); map.on('click',e=>{curLat=e.latlng.lat;curLng=e.latlng.lng;markerCustomer.setLatLng([curLat,curLng]);updateLatLng();});}
+function updateLatLng(){document.getElementById('hiLatLng').textContent=curLat.toFixed(6)+","+curLng.toFixed(6);localStorage.setItem("pijatin_lat",curLat);localStorage.setItem("pijatin_lng",curLng);}
 function gpsReal(){navigator.geolocation.getCurrentPosition(p=>{curLat=p.coords.latitude;curLng=p.coords.longitude;map.setView([curLat,curLng],17);markerCustomer.setLatLng([curLat,curLng]);updateLatLng();});}
-async function saveLokasi(){localStorage.setItem("pijatin_lat",curLat);localStorage.setItem("pijatin_lng",curLng);let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;let payload={fields:{cLat:{doubleValue:curLat},cLng:{doubleValue:curLng},memberGold:{stringValue:ORD}}};await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(payload)});document.getElementById('locStatus').textContent="✅ Lokasi disimpan Firestore: "+curLat.toFixed(5)+","+curLng.toFixed(5);alert("Lokasi disimpan!");}
-async function loadMitra(){try{let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`;let body={structuredQuery:{from:[{collectionId:"mitras"}],where:{fieldFilter:{field:{fieldPath:"isOnline"},op:"EQUAL",value:{booleanValue:true}}},limit:20}};let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)});let j=await r.json();let html="";(j||[]).forEach(d=>{if(!d.document) return;let f=d.document.fields;let nama=f.nama?.stringValue||"Therapist";if(nama.toLowerCase().includes("siti rahayu")) return;let lat=f.lat?.doubleValue, lng=f.lng?.doubleValue; if(lat&&lng&&map)L.marker([lat,lng]).addTo(map).bindPopup("✅ "+nama); html+=`<div style="border:1px solid #eee;padding:6px;border-radius:6px;margin:4px 0">✅ ${nama}</div>`;});if(!html) html="Belum ada mitra ONLINE.";document.getElementById('mitraList').innerHTML=html;}catch(e){}}
-async function buatOrder(namaLayanan,harga){let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/orders?key=${CFG.apiKey}`;let payload={fields:{customerId:{stringValue:uid},nama:{stringValue:localStorage.getItem("pijatin_nama")||"maliki"},layanan:{stringValue:namaLayanan},harga:{integerValue:harga},status:{stringValue:"menunggu"},orderCode:{stringValue:ORD},cLat:{doubleValue:curLat},cLng:{doubleValue:curLng},createdAt:{timestampValue:new Date().toISOString()}}};await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(payload)});alert("Order "+namaLayanan+" "+harga+" dibuat! Lokasi: "+curLat.toFixed(5)+","+curLng.toFixed(5));showTab('Pesanan');}
-async function loadOrders(isR){let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`;let body={structuredQuery:{from:[{collectionId:"orders"}],limit:30}};let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)});let j=await r.json();let html="";(j||[]).forEach(d=>{if(!d.document) return;let f=d.document.fields;if(f.customerId?.stringValue!==uid) return;if(!isR&&f.status?.stringValue==="done") return;if(isR&&f.status?.stringValue!=="done") return;html+=`<div style="border:1px solid #ddd;padding:6px;border-radius:6px;margin:4px 0"><b>${f.layanan?.stringValue}</b> - ${f.harga?.integerValue||''}<br>Status: ${f.status?.stringValue}<br><small>${f.orderCode?.stringValue}</small></div>`;});if(!html) html=isR?"Belum ada riwayat":"Belum ada pesanan";document.getElementById(isR?'riwayatList':'pesananList').innerHTML=html;}
+async function saveLokasi(){localStorage.setItem("pijatin_lat",curLat);localStorage.setItem("pijatin_lng",curLng);let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{cLat:{doubleValue:curLat},cLng:{doubleValue:curLng}}})});alert("Lokasi REAL disimpan!");}
+
+async function buatOrder(namaLayanan,harga){
+ // CEK SALDO REAL
+ if(saldo < harga){
+  alert(`❌ Saldo tidak cukup!\nSaldo: Rp ${saldo.toLocaleString('id-ID')}\nButuh: Rp ${harga.toLocaleString('id-ID')}\nTopup dulu di Profil!`);
+  showTab('Profil');
+  return;
+ }
+ if(!confirm(`Pesan ${namaLayanan} - Rp ${harga.toLocaleString('id-ID')}?\nSaldo akan dipotong. Lanjut?`)) return;
+ let newSaldo=saldo - harga;
+ await updateSaldoFirestore(newSaldo);
+ let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/orders?key=${CFG.apiKey}`;
+ let payload={fields:{customerId:{stringValue:uid},layanan:{stringValue:namaLayanan},harga:{integerValue:harga},saldoSisa:{integerValue:newSaldo},status:{stringValue:"menunggu"},orderCode:{stringValue:ORD},cLat:{doubleValue:curLat},cLng:{doubleValue:curLng},createdAt:{timestampValue:new Date().toISOString()}}};
+ await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(payload)});
+ alert(`✅ Order ${namaLayanan} berhasil!\nPotong saldo Rp ${harga.toLocaleString('id-ID')}\nSisa: Rp ${newSaldo.toLocaleString('id-ID')}`);
+ showTab('Pesanan');
+}
+
+async function loadMitra(){try{let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`;let body={structuredQuery:{from:[{collectionId:"mitras"}],where:{fieldFilter:{field:{fieldPath:"isOnline"},op:"EQUAL",value:{booleanValue:true}}},limit:20}};let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)});let j=await r.json();let html="";(j||[]).forEach(d=>{if(!d.document) return;let f=d.document.fields;let nama=f.nama?.stringValue||"Therapist";if(nama.toLowerCase().includes("siti rahayu")) return;html+=`<div style="border:1px solid #eee;padding:6px;border-radius:6px;margin:4px 0">✅ ${nama} ONLINE</div>`;});if(!html) html="Belum ada mitra ONLINE.";document.getElementById('mitraList').innerHTML=html;}catch(e){}}
+async function loadOrders(isR){let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`;let body={structuredQuery:{from:[{collectionId:"orders"}],limit:30}};let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)});let j=await r.json();let html="";(j||[]).forEach(d=>{if(!d.document) return;let f=d.document.fields;if(f.customerId?.stringValue!==uid) return;if(!isR&&f.status?.stringValue==="done") return;if(isR&&f.status?.stringValue!=="done") return;html+=`<div style="border:1px solid #ddd;padding:6px;border-radius:6px;margin:4px 0"><b>${f.layanan?.stringValue}</b> - Rp ${f.harga?.integerValue?.toLocaleString('id-ID')||''}<br>Status: ${f.status?.stringValue}<br>Sisa saldo: Rp ${f.saldoSisa?.integerValue?.toLocaleString('id-ID')||''}</div>`;});if(!html) html=isR?"Belum ada riwayat":"Belum ada pesanan";document.getElementById(isR?'riwayatList':'pesananList').innerHTML=html;}
 function logout(){localStorage.removeItem("pijatin_token");localStorage.removeItem("pijatin_uid");document.getElementById('pageApp').style.display='none';document.getElementById('pageLogin').style.display='block';if(map){map.remove();map=null;}}
 (function(){if(localStorage.getItem("pijatin_uid")&&localStorage.getItem("pijatin_token")){idToken=localStorage.getItem("pijatin_token");uid=localStorage.getItem("pijatin_uid");masukApp();}})();
 </script>
