@@ -16,7 +16,8 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> fileCallback;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    setTheme(R.style.Theme_AppCompat_Light_NoActionBar);{
         super.onCreate(savedInstanceState);
         webView = new WebView(this);
         setContentView(webView);
