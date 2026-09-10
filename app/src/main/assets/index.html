@@ -131,7 +131,40 @@ function uploadFoto(input){let file=input.files[0]; if(!file) return; let reader
 async function loadSettingProfil(){setNama.value=localStorage.getItem("pijatin_nama")||""; setEmail.value=localStorage.getItem("pijatin_email")||""; setHp.value=localStorage.getItem("pijatin_hp")||""; try{let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;let r=await fetch(url,{headers:{"Authorization":"Bearer "+idToken}});let j=await r.json(); setAlamat.value=j.fields?.alamat?.stringValue||"";}catch(e){setAlamat.value=localStorage.getItem("pijatin_alamat")||"";}}
 // FIX #157 + #158: SIMPAN PROFIL TANPA OTP (OTP HANYA DI GANTI PASSWORD)
 async function simpanProfil(){let n=setNama.value,h=setHp.value,al=setAlamat.value; if(!n||!h) return alert('Nama & HP wajib!'); localStorage.setItem("pijatin_nama",n); localStorage.setItem("pijatin_hp",h); localStorage.setItem("pijatin_alamat",al); try{let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{nama:{stringValue:n},hp:{stringValue:h},alamat:{stringValue:al}}})});}catch(e){} alert('✅ Profil disimpan'); masukApp();}
-async function gantiPasswordOTP(){let oldP=oldPass.value,newP=newPass.value,konf=konfNewPass.value; if(!oldP||!newP||!konf) return alert('Lengkapi!'); if(newP!==konf) return alert('Konfirmasi tidak sama!'); let hp=localStorage.getItem("pijatin_hp")||setHp.value; let otp=Math.floor(100000+Math.random()*900000).toString(); let waNum=hp.replace(/[^0-9]/g,''); if(waNum.startsWith('0')) waNum='62'+waNum.substring(1); window.open(`https://wa.me/${waNum}?text=${encodeURIComponent('OTP Ganti Password: '+otp)}`,'_blank'); let input=prompt(`OTP ke WA ${hp} DEV: ${otp}`); if(input!==otp) return alert('OTP salah!'); try{let email=localStorage.getItem("pijatin_email"); let r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${CFG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password:oldP,returnSecureToken:true})}); let j=await r.json(); if(j.error) return alert('Password lama salah'); let r2=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${CFG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({idToken:j.idToken,password:newP,returnSecureToken:true})}); let j2=await r2.json(); if(j2.error) return alert('Gagal: '+j2.error.message); alert('✅ Password diganti - Login ulang'); logout();}catch(e){alert(e);}}
+async function gantiPasswordOTP(){
+  let oldP=document.getElementById('oldPass')?.value,
+      newP=document.getElementById('newPass')?.value,
+      conf=document.getElementById('confirmPass')?.value;
+  if(!oldP||!newP||!conf) return alert('Isi semua password');
+  if(newP!==conf) return alert('Konfirmasi tidak sama');
+  if(newP.length<6) return alert('Minimal 6 karakter');
+  
+  let waRaw=document.getElementById('sWA')?.value||'083993330346';
+  let wa=waRaw.replace(/[^0-9]/g,'');
+  if(wa.startsWith('0')) wa='62'+wa.substring(1);
+  if(!wa.startsWith('62')) wa='62'+wa;
+  
+  genOTP=Math.floor(100000+Math.random()*900000).toString();
+  pendingNewPass=newP;
+  
+  // Tampilkan modal OTP
+  let disp=document.getElementById('waNumberDisplay');
+  if(disp) disp.innerText='+'+wa;
+  let demo=document.getElementById('demoOTPCode');
+  if(demo) demo.innerText=genOTP;
+  let modal=document.getElementById('otpModal');
+  if(modal) modal.style.display='flex';
+  
+  // FIX #163 - PAKAI https://wa.me/ BUKAN whatsapp:// biar tidak ERR_UNKNOWN_URL_SCHEME
+  let pesan=`PijatIN OTP Ganti Password: ${genOTP} - Berlaku 5 menit`;
+  let waUrl=`https://wa.me/${wa}?text=${encodeURIComponent(pesan)}`;
+  
+  setTimeout(()=>{
+    if(confirm(`Kode OTP ${genOTP} ke WA +${wa}\nBuka WA Messenger?`)){
+      window.open(waUrl,'_blank'); // Sekarang kebuka di WA Messenger!
+    }
+  },500);
+}
 async function loadSaldoReal(){try{let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;let r=await fetch(url,{headers:{"Authorization":"Bearer "+idToken}});let j=await r.json(); saldo=parseInt(j.fields?.saldo?.integerValue||0)||50000; renderSaldo();}catch(e){saldo=50000;renderSaldo();}}
 function renderSaldo(){saldoHeader.textContent="Rp "+saldo.toLocaleString('id-ID'); let el=document.getElementById('saldoSaldoTab'); if(el) el.textContent="Rp "+saldo.toLocaleString('id-ID'); hiLatLng.textContent=curLat.toFixed(5)+","+curLng.toFixed(5);}
 function initMap(){if(map){map.remove();map=null;} map=L.map('map').setView([curLat,curLng],15); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); markerCustomer=L.marker([curLat,curLng],{draggable:true}).addTo(map).bindPopup("Titik Rumah Anda - Geser!").openPopup(); markerCustomer.on('dragend',e=>{let ll=e.target.getLatLng();curLat=ll.lat;curLng=ll.lng;renderSaldo();}); map.on('click',e=>{curLat=e.latlng.lat;curLng=e.latlng.lng;markerCustomer.setLatLng([curLat,curLng]);renderSaldo();});}
