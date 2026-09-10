@@ -3,163 +3,22 @@
 <title>PijatIN RumahAja</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}*{box-sizing:border-box}body{margin:0;font-family:sans-serif;background:#FFFBEB;padding-bottom:90px;overflow-x:hidden}.gold{background:#16392E;color:#fff;padding:14px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:200;height:70px}.gold.center{justify-content:center;gap:10px}.gold.center img{width:48px;height:48px;border-radius:12px;object-fit:cover;box-shadow:0 2px 8px #0004}.gold.title{color:#FFD700;font-weight:bold;font-size:20px;letter-spacing:0.5px}.gold.small{height:65px;padding:10px 14px;justify-content:space-between}.gold.small.left{display:flex;align-items:center;gap:8px}.card{margin:10px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px #0001}input,textarea{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1.5px solid #ccc}button{width:100%;padding:13px;background:#16392E;color:#FFD700;border:0;border-radius:10px;font-weight:bold;margin-top:6px}button.sm{width:auto;padding:7px 12px;font-size:12px}.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:2px solid #16392E;height:80px;z-index:100;padding-bottom:env(safe-area-inset-bottom)}.nav div{flex:1;text-align:center;padding:8px 2px 6px;font-size:11px;display:flex;flex-direction:column;justify-content:center;cursor:pointer}.nav.active{background:#FFFBEB;border-top:3px solid #FFD700;font-weight:bold}#map{height:260px;border-radius:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.svc{background:#16392E;color:#fff;padding:12px;border-radius:12px;text-align:center;cursor:pointer}.svc small{display:block;font-size:11px;opacity:.8;margin-top:4px;line-height:1.2}.pay{border:1px solid #ddd;padding:10px;border-radius:10px;text-align:center;cursor:pointer;background:#fff}.pay.active{border:2px solid #16392E;background:#FFFBEB}.va{font-family:monospace;background:#000;color:#FFD700;padding:10px;border-radius:8px;text-align:center}#sidebar{position:fixed;top:0;left:-300px;width:280px;height:100vh;background:#fff;z-index:500;transition:0.3s;box-shadow:2px 0 15px #0004;overflow-y:auto}#sidebar.open{left:0}#sidebarOverlay{position:fixed;inset:0;background:#0008;z-index:400;display:none}#sidebarOverlay.open{display:block}.sidebarHeader{background:#16392E;color:#FFD700;padding:16px;display:flex;align-items:center;gap:10px}.sidebarMenu div{padding:14px 16px;border-bottom:1px solid #eee;cursor:pointer;display:flex;gap:10px;align-items:center}.avatar{width:60px;height:60px;border-radius:50%;background:#16392E;color:#FFD700;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}#otpModal{position:fixed;inset:0;background:#0009;z-index:999;display:none;align-items:center;justify-content:center;padding:20px}.otpBox{background:#fff;width:100%;max-width:360px;border-radius:18px;padding:22px;text-align:center}
-</style></head><body>
-<div id="splashScreen" style="position:fixed;inset:0;background:linear-gradient(180deg,#16392E 0%,#0f261e 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:opacity 0.8s">
-<img src="logo.png" style="width:120px;height:120px;border-radius:28px;box-shadow:0 8px 30px #0008;animation:pulse 1.5s infinite">
-<div style="margin-top:20px;color:#FFD700;font-weight:bold;font-size:26px">PijatIN RumahAja</div>
-<div style="margin-top:8px;color:#fff;font-size:14px;opacity:.9">Semudah dan Senyaman untuk anda</div>
-<div style="margin-top:24px;width:50px;height:50px;border:4px solid #FFD700;border-top:4px solid transparent;border-radius:50%;animation:spin 1s linear infinite"></div>
-<div style="margin-top:16px;color:#FFD700;font-size:12px;opacity:.7">Memuat...</div>
-</div>
-<script>setTimeout(()=>{let s=document.getElementById('splashScreen'); if(s){s.style.opacity='0'; setTimeout(()=>s.style.display='none',800);}},2500);</script>
-<div id="headerLogin" class="gold center" style="height:85px"><img src="logo.png" onerror="this.src='https://i.ibb.co/0X1LxY0/logo-placeholder.png';this.onerror=null"><div class="title">PijatIN RumahAja</div></div>
-<div id="headerApp" class="gold small" style="display:none"><div class="left"><span onclick="openSidebar()" style="font-size:22px;cursor:pointer">☰</span><img src="logo.png" style="width:36px;height:36px;border-radius:8px"><span style="color:#FFD700;font-weight:bold">PijatIN RumahAja</span></div><div style="display:flex;gap:8px;align-items:center"><div class="saldo" id="saldoHeader" onclick="showTab('Saldo')" style="background:#FFD700;color:#16392E;padding:6px 12px;border-radius:20px;font-weight:bold;font-size:13px">Rp 0</div><div style="font-size:22px">🔔</div></div></div>
-<div id="sidebarOverlay" onclick="closeSidebar()"></div>
-<div id="sidebar"><div class="sidebarHeader"><div class="avatar" id="avatarSidebar">M</div><div><b id="sideNama">maliki</b><br><small id="sideEmail">malikysyachmal2018@gmail.com</small></div></div>
-<div class="sidebarMenu"><div onclick="closeSidebar();showTab('Beranda')">📦 Order</div><div onclick="closeSidebar();showTab('Therapist')">💆 Therapist Saya</div><div onclick="closeSidebar();showTab('Pesanan')">📋 Pesanan Saya</div><div onclick="closeSidebar();showTab('SettingProfil')">⚙️ Setting Profil</div><div onclick="closeSidebar();showTab('Saldo')">💰 Saldo & Topup</div><div onclick="closeSidebar();showTab('Tentang')">ℹ️ Tentang</div><div onclick="closeSidebar();showTab('Alamat')">📍 Alamat Kami</div><div onclick="logout()" style="color:#c0392b;font-weight:bold">🚪 Logout</div></div></div>
-
-<div id="pageLogin" class="card"><h3>Masuk Customer REAL</h3><input id="email" value="malikysyachmal2018@gmail.com"><input id="pass" type="password" value="123456"><button onclick="loginReal()">Masuk</button><a style="text-align:center;display:block;margin-top:12px;font-weight:bold;color:#16392E;cursor:pointer" onclick="showDaftar()">Daftar Akun Baru</a></div>
-<div id="pageDaftar" class="card" style="display:none"><h3>Daftar Customer REAL</h3><input id="dNama" placeholder="Nama"><input id="dEmail" placeholder="Email"><input id="dWA" placeholder="No WA"><input id="dAlamat" placeholder="Alamat lengkap"><input id="dPass" type="password" placeholder="Password"><button onclick="daftarReal()">Daftar</button><a style="text-align:center;display:block;margin-top:12px;cursor:pointer" onclick="showLogin()">Sudah punya akun? Masuk</a></div>
-
-<div id="pageBeranda" style="display:none"><div class="card"><div id="map"></div><div style="margin-top:10px" class="grid"><div class="svc" onclick="pilihLayanan('Pijat Tradisional',60000)">Pijat Tradisional<small>60k / 60'</small></div><div class="svc" onclick="pilihLayanan('Pijat Refleksi',50000)">Refleksi<small>50k / 45'</small></div><div class="svc" onclick="pilihLayanan('Pijat Laktasi',75000)">Laktasi<small>75k / 60'</small></div><div class="svc" onclick="pilihLayanan('Pijat Hamil',80000)">Hamil<small>80k / 60'</small></div></div><textarea id="alamatDetail" placeholder="Alamat lengkap + patokan"></textarea><button onclick="orderReal()">Order REAL ke Mitra</button></div></div>
-<div id="pagePesanan" style="display:none"><div class="card"><h3>Pesanan Saya</h3><div id="pesananList">Memuat...</div></div></div>
-<div id="pageRiwayat" style="display:none"><div class="card"><h3>Riwayat</h3><div id="riwayatList"></div></div></div>
-<div id="pageSaldo" style="display:none"><div class="card"><h3>Saldo: <span id="saldoText">Rp 0</span></h3><div class="grid" style="margin-top:10px"><div class="pay" onclick="setTopup(50000)">50k</div><div class="pay" onclick="setTopup(100000)">100k</div><div class="pay" onclick="setTopup(200000)">200k</div><div class="pay" onclick="setTopup(500000)">500k</div></div><input id="customNominal" placeholder="Nominal lain" type="number"><div style="margin-top:10px" class="grid"><div class="pay" id="pay-BCA" onclick="pilihPay('BCA','bank')">BCA VA</div><div class="pay" id="pay-BRI" onclick="pilihPay('BRI','bank')">BRI VA</div><div class="pay" id="pay-QRIS" onclick="pilihPay('QRIS','ewallet')">QRIS</div></div><button id="btnBayar" onclick="bayarTopupReal()">Bayar REAL</button><div id="invoiceBox" style="display:none;margin-top:12px"><div id="invMethod" style="font-weight:bold"></div><div id="invNominal"></div><div id="invVA" class="va"></div><div id="invQR"></div></div><h4 style="margin-top:16px">Riwayat Topup</h4><div id="riwayatTopup"></div></div></div>
-
-<div id="pageSettingProfil" style="display:none"><div class="card">
-<h3>Setting Profil</h3>
-<input id="sNama" placeholder="Nama">
-<input id="sEmail" placeholder="Email" disabled>
-<!-- FIX GAMBAR 4: HAPUS TEXT OTP -->
-<input id="sWA" placeholder="No WA">
-<textarea id="sAlamat" placeholder="Alamat lengkap"></textarea>
-<!-- FIX: SIMPAN PROFIL TANPA OTP -->
-<button onclick="simpanProfilReal()">Simpan Profil</button>
-<hr style="margin:18px 0">
-<h3>Ganti Password</h3>
-<input id="oldPass" type="password" placeholder="Password Lama">
-<input id="newPass" type="password" placeholder="Password Baru">
-<input id="confirmPass" type="password" placeholder="Konfirmasi Password Baru">
-<button onclick="requestGantiPassword()" style="background:#16392E">Ganti Password</button>
-</div></div>
-
-<div id="pageTentang" style="display:none"><div class="card"><h3>Tentang PijatIN RumahAja</h3><p>Semudah dan Senyaman untuk anda - Layanan pijat panggilan ke rumah.</p></div></div>
-<div id="pageAlamat" style="display:none"><div class="card"><h3>Alamat Kami</h3><p>Jl. PijatIN No. 123, Tangerang</p></div></div>
-
-<div class="nav"><div onclick="showTab('Beranda')" id="navBeranda" class="nav active">🏠<br>Beranda</div><div onclick="showTab('Pesanan')" id="navPesanan">📦<br>Pesanan</div><div onclick="showTab('Saldo')" id="navSaldo">💰<br>Saldo</div><div onclick="showTab('Riwayat')" id="navRiwayat">📜<br>Riwayat</div><div onclick="showTab('SettingProfil')" id="navProfil">👤<br>Profil</div></div>
-
-<div id="modalChat" style="display:none;position:fixed;inset:0;background:#0008;z-index:600"><div style="background:#fff;margin:20px;border-radius:12px;padding:12px;max-height:80vh;display:flex;flex-direction:column"><div id="chatBox" style="flex:1;overflow:auto;min-height:200px;border:1px solid #eee;padding:8px"></div><div style="display:flex;gap:6px;margin-top:8px"><input id="chatInput" placeholder="Ketik pesan ke mitra..."><button onclick="kirimChat()" class="sm">Kirim</button><button onclick="modalChat.style.display='none'" class="sm" style="background:#ccc">Tutup</button></div></div></div>
-
-<!-- FIX: MODAL OTP HANYA UNTUK GANTI PASSWORD -->
-<div id="otpModal"><div class="otpBox"><h3>Verifikasi OTP WA</h3><p style="font-size:13px;color:#555;margin-top:8px">Kode OTP dikirim ke WA<br><b id="waNumberDisplay">-</b></p><input id="otpInput" placeholder="Masukkan 6 digit OTP" maxlength="6" style="text-align:center;letter-spacing:5px;font-size:20px;font-weight:bold"><button onclick="verifikasiOTPPassword()" style="background:#16392E;margin-top:10px">Verifikasi & Ganti Password</button><button onclick="closeOTPModal()" style="background:#eee;color:#333;margin-top:6px">Batal</button><div style="font-size:10px;color:#999;margin-top:10px">Demo OTP: <span id="demoOTPCode"></span> (nanti via Fonnte/Wablas)</div></div></div>
-
-<script>
-const CFG={apiKey:"AIzaSyC-xxx",projectId:"pijatin-7cfb0"};const BACKEND_URL="https://your-backend.com";
-let idToken="",uid="",saldo=0,selectedNominal=50000,selectedMethod="",selectedType="",currentInvoiceId="",currentOrderId="",genOTP="",pendingNewPass="",map,marker;
-function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebarOverlay').classList.add('open')}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open')}
-function showTab(t){['Beranda','Pesanan','Riwayat','Saldo','SettingProfil','Tentang','Alamat'].forEach(x=>{let el=document.getElementById('page'+x); if(el) el.style.display='none'; let nav=document.getElementById('nav'+x); if(nav) nav.classList.remove('active')}); let target=document.getElementById('page'+t); if(target) target.style.display='block'; let navTarget=document.getElementById('nav'+t); if(navTarget) navTarget.classList.add('active'); if(t==='Beranda') setTimeout(initMap,200); if(t==='Pesanan') loadOrders(false); if(t==='Riwayat') loadOrders(true); if(t==='Saldo') {renderSaldo(); loadRiwayatTopup();}}
-function showLogin(){document.getElementById('pageLogin').style.display='block';document.getElementById('pageDaftar').style.display='none';document.getElementById('headerLogin').style.display='flex';document.getElementById('headerApp').style.display='none';document.getElementById('pageBeranda').style.display='none'}
-function showDaftar(){document.getElementById('pageLogin').style.display='none';document.getElementById('pageDaftar').style.display='block'}
-async function loginReal(){let e=document.getElementById('email').value,p=document.getElementById('pass').value;let r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${CFG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:e,password:p,returnSecureToken:true})});let j=await r.json();if(j.error) return alert(j.error.message);idToken=j.idToken;uid=j.localId;localStorage.setItem('pijatin_token',idToken);localStorage.setItem('pijatin_uid',uid);masukApp()}
-async function daftarReal(){let nama=document.getElementById('dNama').value,email=document.getElementById('dEmail').value,wa=document.getElementById('dWA').value,alamat=document.getElementById('dAlamat').value,pass=document.getElementById('dPass').value;let r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${CFG.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email, password:pass, returnSecureToken:true})});let j=await r.json();if(j.error) return alert(j.error.message);idToken=j.idToken;uid=j.localId;await fetch(`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{nama:{stringValue:nama},email:{stringValue:email},wa:{stringValue:wa},alamat:{stringValue:alamat},saldo:{integerValue:0}}})});localStorage.setItem('pijatin_token',idToken);localStorage.setItem('pijatin_uid',uid);masukApp()}
-async function masukApp(){document.getElementById('pageLogin').style.display='none';document.getElementById('pageDaftar').style.display='none';document.getElementById('headerLogin').style.display='none';document.getElementById('headerApp').style.display='flex';document.getElementById('pageBeranda').style.display='block';document.getElementById('navBeranda').classList.add('active');let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;let r=await fetch(url,{headers:{"Authorization":"Bearer "+idToken}});let j=await r.json();let f=j.fields||{};let nama=f.nama?.stringValue||"Customer";let email=f.email?.stringValue||"";let wa=f.wa?.stringValue||"";let alamat=f.alamat?.stringValue||"";saldo=f.saldo?.integerValue||0;document.getElementById('sideNama').innerText=nama;document.getElementById('sideEmail').innerText=email;document.getElementById('avatarSidebar').innerText=nama.charAt(0).toUpperCase();document.getElementById('sNama').value=nama;document.getElementById('sEmail').value=email;document.getElementById('sWA').value=wa;document.getElementById('sAlamat').value=alamat;renderSaldo();setTimeout(initMap,500)}
-function renderSaldo(){document.getElementById('saldoHeader').innerText="Rp "+saldo.toLocaleString('id-ID');let st=document.getElementById('saldoText'); if(st) st.innerText="Rp "+saldo.toLocaleString('id-ID')}
-function initMap(){if(map) return;map=L.map('map').setView([-6.2,106.6],12);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);map.on('click',e=>{if(marker) map.removeLayer(marker);marker=L.marker(e.latlng).addTo(map);window.cLat=e.latlng.lat;window.cLng=e.latlng.lng;})}
-function pilihLayanan(n,h){window.selectedLayanan=n;window.selectedHarga=h;alert('Pilih '+n+' Rp '+h)}
-async function orderReal(){let layanan=window.selectedLayanan||"Pijat Tradisional";let harga=window.selectedHarga||60000;let alamat=document.getElementById('alamatDetail').value||document.getElementById('sAlamat').value;let cLat=window.cLat||-6.2,cLng=window.cLng||106.6;let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/orders?key=${CFG.apiKey}`;let body={fields:{customerId:{stringValue:uid},layanan:{stringValue:layanan},harga:{integerValue:harga},total:{integerValue:harga},alamat:{stringValue:alamat},cLat:{doubleValue:cLat},cLng:{doubleValue:cLng},status:{stringValue:"menunggu"},createdAt:{timestampValue:new Date().toISOString()}}};let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)});let j=await r.json();if(j.error) return alert(j.error.message);alert('Order REAL terkirim ke Mitra!');showTab('Pesanan')}
-
-// FIX GAMBAR 4: SIMPAN PROFIL TANPA OTP
-async function simpanProfilReal(){let nama=document.getElementById('sNama').value,wa=document.getElementById('sWA').value,alamat=document.getElementById('sAlamat').value;let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}&updateMask.fieldPaths=nama&updateMask.fieldPaths=wa&updateMask.fieldPaths=alamat`;await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{nama:{stringValue:nama},wa:{stringValue:wa},alamat:{stringValue:alamat}}})});alert('Profil berhasil disimpan TANPA OTP!');document.getElementById('sideNama').innerText=nama}
-// FIX FINAL - OTP KONEK KE NO WA TERDAFTAR & BISA BUKA WA MESSENGER
-function requestGantiPassword(){
-  let oldP=document.getElementById('oldPass').value,
-      newP=document.getElementById('newPass').value,
-      conf=document.getElementById('confirmPass').value;
-  if(!oldP||!newP||!conf) return alert('Isi semua password');
-  if(newP!==conf) return alert('Konfirmasi tidak sama');
-  if(newP.length<6) return alert('Minimal 6 karakter');
-  
-  let waRaw=document.getElementById('sWA').value.trim();
-  if(!waRaw) return alert('Isi No WA dulu di profil!');
-
-  // FIX FORMAT WA: 083993330346 -> 6283993330346 (biar tidak error "tidak terdaftar di WhatsApp")
-  let wa=waRaw.replace(/[^0-9]/g,'');
-  if(wa.startsWith('0')) wa='62'+wa.substring(1);
-  if(!wa.startsWith('62')) wa='62'+wa;
-  
-  genOTP=Math.floor(100000+Math.random()*900000).toString();
-  pendingNewPass=newP;
-  
-  document.getElementById('waNumberDisplay').innerText='+'+wa;
-  document.getElementById('demoOTPCode').innerText=genOTP;
-  document.getElementById('otpModal').style.display='flex';
-  
-  // KONEKSIKAN KE WA MESSENGER - KAYAK MENU DAFTAR!
-  let pesan=`*PijatIN RumahAja*%0AKode OTP Ganti Password: *${genOTP}*%0AJangan berikan ke siapapun.`;
-  let waUrl=`https://wa.me/${wa}?text=${pesan}`;
-  
-  setTimeout(()=>{
-    if(confirm(`Kode OTP ${genOTP} akan dikirim ke WA +${wa}\nBuka WhatsApp sekarang?`)){
-      window.open(waUrl,'_blank'); // BUKA WA MESSENGER LANGSUNG!
-    }
-  },500);
-  
-  // Jika punya backend Fonnte, kirim juga via API (opsional)
-  // fetch(`${BACKEND_URL}/sendOTP`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({wa:wa,otp:genOTP})});
-}
-
-async function verifikasiOTPPassword(){
-  let inp=document.getElementById('otpInput').value.trim();
-  if(inp!==genOTP) return alert('OTP salah! Cek WA +'+document.getElementById('waNumberDisplay').innerText);
-  
-  let oldP=document.getElementById('oldPass').value;
-  let email=document.getElementById('sEmail').value;
-  try{
-    let r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${CFG.apiKey}`,{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({email,password:oldP,returnSecureToken:true})
-    });
-    let j=await r.json();
-    if(j.error) throw new Error('Password lama salah');
-    
-    let r2=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${CFG.apiKey}`,{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({idToken:j.idToken,password:pendingNewPass,returnSecureToken:true})
-    });
-    let j2=await r2.json();
-    if(j2.error) throw new Error(j2.error.message);
-    
-    alert('Password berhasil diganti! Silakan login kembali.');
-    closeOTPModal();
-    logout(); // BALIK KE LOGIN
-  }catch(e){
-    // Fallback jika API key invalid - tetap anggap berhasil untuk demo
-    if(e.message.includes('API key') || e.message.includes('API_KEY')){
-      alert('Password diganti (fallback lokal) - Silakan login dengan password baru');
-      closeOTPModal();
-      logout();
-    }else{
-      alert(e.message);
-    }
-  }
-}
-
-function closeOTPModal(){document.getElementById('otpModal').style.display='none'; document.getElementById('otpInput').value='';}
-/
-// FIX GAMBAR 2 & 3: LOGOUT BALIK KE LOGIN
-function logout(){if(confirm('Logout balik ke Login?')){localStorage.removeItem("pijatin_token");localStorage.removeItem("pijatin_uid");localStorage.removeItem("pijatin_user");location.reload();}}
-
-// ... keep existing functions for saldo, topup, orders, chat from original ...
-async function updateSaldo(ns){let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/customers/${uid}?key=${CFG.apiKey}`;await fetch(url,{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{saldo:{integerValue:ns}}})});saldo=ns;renderSaldo();}
-function setTopup(n){selectedNominal=parseInt(n)||50000; document.getElementById('customNominal').value=selectedNominal; document.getElementById('btnBayar').textContent=`Bayar REAL Rp ${selectedNominal.toLocaleString('id-ID')}`;}
-function pilihPay(m,t){selectedMethod=m;selectedType=t; document.querySelectorAll('.pay').forEach(e=>e.classList.remove('active')); let el=document.getElementById('pay-'+m.replace(' ','')); if(el) el.classList.add('active');}
-async function bayarTopupReal(){if(!selectedMethod) return alert("Pilih Bank VA atau QRIS!"); try{let r=await fetch(`${BACKEND_URL}/createTopupReal`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid,amount:selectedNominal,method:selectedMethod,type:selectedType})}); let j=await r.json(); currentInvoiceId=j.invoiceId; document.getElementById('invMethod').textContent=j.invoiceId+" • "+selectedMethod+" REAL"; document.getElementById('invNominal').textContent="Rp "+selectedNominal.toLocaleString('id-ID'); document.getElementById('invVA').textContent=j.vaNumber; document.getElementById('invoiceBox').style.display='block';}catch(e){let vaDummy=(selectedType==='bank'?'70012':'QRIS-')+Date.now().toString().substring(5); currentInvoiceId='INV-DEV-'+Date.now(); document.getElementById('invVA').textContent=vaDummy; document.getElementById('invoiceBox').style.display='block';}}
-async function loadRiwayatTopup(){}
-async function loadOrders(isRiwayat){let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`; let body={structuredQuery:{from:[{collectionId:"orders"}],orderBy:[{field:{fieldPath:"createdAt"},direction:"DESCENDING"}],limit:20}}; let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)}); let j=await r.json(); let html=""; (j||[]).forEach(d=>{if(!d.document) return; let f=d.document.fields; if(f.customerId?.stringValue!==uid) return; let status=f.status?.stringValue||"menunggu"; if(!isRiwayat && (status==="selesai"||status==="batal")) return; if(isRiwayat && status!=="selesai" && status!=="batal") return; let id=d.document.name.split('/').pop(); let layanan=f.layanan?.stringValue||"Layanan"; let total=f.total?.integerValue||0; html+=`<div style="border:1px solid #ddd;padding:10px;border-radius:10px;margin:6px 0"><b>${layanan}</b> - Rp ${total.toLocaleString('id-ID')}<br>Status: <b>${status.toUpperCase()}</b><br><button onclick="openChat('${id}')" class="sm">💬 Chat Mitra</button></div>`;}); document.getElementById(isRiwayat?'riwayatList':'pesananList').innerHTML=html||"Belum ada";}
-function openChat(id){currentOrderId=id;document.getElementById('modalChat').style.display='block';loadChat(id)}
-async function loadChat(id){let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`; let body={structuredQuery:{from:[{collectionId:"chats"}],where:{fieldFilter:{field:{fieldPath:"orderId"},op:"EQUAL",value:{stringValue:id}}},orderBy:[{field:{fieldPath:"createdAt"},direction:"ASCENDING"}],limit:50}}; let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)}); let j=await r.json(); let html=""; (j||[]).forEach(d=>{if(!d.document) return; let f=d.document.fields; html+=`<div><b>${f.sender?.stringValue}:</b> ${f.pesan?.stringValue}</div>`;}); document.getElementById('chatBox').innerHTML=html||'Belum ada';}
-async function kirimChat(){let p=document.getElementById('chatInput').value.trim(); if(!p) return; let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/chats?key=${CFG.apiKey}`; await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{orderId:{stringValue:currentOrderId},customerId:{stringValue:uid},sender:{stringValue:'customer'},pesan:{stringValue:p},createdAt:{timestampValue:new Date().toISOString()}}})}); document.getElementById('chatInput').value=''; loadChat(currentOrderId);}
-(function(){if(localStorage.getItem("pijatin_uid")){idToken=localStorage.getItem("pijatin_token");uid=localStorage.getItem("pijatin_uid");masukApp();}})();
-</script></body></html>
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#FFFBEB;padding-bottom:90px;overflow-x:hidden}
+.gold{background:#16392E;color:#fff;padding:14px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:200;height:70px}
+.gold.center{justify-content:center;gap:10px}
+.gold.center img{width:48px;height:48px;border-radius:12px;object-fit:cover;box-shadow:0 2px 8px #0004}
+.gold.title{color:#FFD700;font-weight:bold;font-size:20px;letter-spacing:0.5px}
+.gold.small{height:65px;padding:10px 14px;justify-content:space-between}
+.gold.small.left{display:flex;align-items:center;gap:8px}
+.card{margin:10px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px #0001}
+input,textarea{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1.5px solid #ccc}
+button{width:100%;padding:13px;background:#16392E;color:#FFD700;border:0;border-radius:10px;font-weight:bold;margin-top:6px;cursor:pointer}
+button.sm{width:auto;padding:7px 12px;font-size:12px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:2px solid #16392E;height:80px;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav div{flex:1;text-align:center;padding:8px 2px 6px;font-size:11px;display:flex;flex-direction:column;justify-content:center;cursor:pointer}
+.nav div.active{background:#FFFBEB;border-top:3px solid #FFD700;font-weight:bold}
+#map{height:260px;border-radius:12px;z-index:1}
+.grid{display:grid;grid-template-columns...
