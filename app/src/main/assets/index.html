@@ -193,14 +193,13 @@ function logout(){
     sessionStorage.clear();
   }catch(e){}
   try{
-    let nav=document.querySelector('.nav');
-    if(nav) nav.style.display='none';
+    document.querySelector('.nav').style.display='none';
     document.getElementById('headerApp').style.display='none';
     document.getElementById('headerLogin').style.display='flex';
     closeSidebar(); showLogin();
   }catch(e){
     window.location.href=window.location.href.split('?')[0];
   }
-}
+} 
 (function(){if(localStorage.getItem("pijatin_token")){try{showBeranda();}catch(e){}}})();
 </script></body></html>
