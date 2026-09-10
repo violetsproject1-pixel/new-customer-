@@ -183,6 +183,14 @@ async function updateOrderStatus(id,status,timer=false){let url=`https://firesto
 function openChat(id){currentOrderId=id; modalChat.style.display='block'; loadChat(id);}
 async function loadChat(id){let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents:runQuery?key=${CFG.apiKey}`; let body={structuredQuery:{from:[{collectionId:"chats"}],where:{fieldFilter:{field:{fieldPath:"orderId"},op:"EQUAL",value:{stringValue:id}}},orderBy:[{field:{fieldPath:"createdAt"},direction:"ASCENDING"}],limit:50}}; try{let r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify(body)}); let j=await r.json(); let html=""; (j||[]).forEach(d=>{if(!d.document) return; let f=d.document.fields; let sender=f.sender?.stringValue==='customer'?'Anda':'Mitra'; html+=`<div><b>${sender}:</b> ${f.pesan?.stringValue}</div>`;}); chatBox.innerHTML=html||'Belum ada';}catch(e){}}
 async function kirimChat(){let p=chatInput.value.trim(); if(!p) return; let url=`https://firestore.googleapis.com/v1/projects/${CFG.projectId}/databases/(default)/documents/chats?key=${CFG.apiKey}`; await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({fields:{orderId:{stringValue:currentOrderId},customerId:{stringValue:uid},sender:{stringValue:'customer'},pesan:{stringValue:p},createdAt:{timestampValue:new Date().toISOString()}}})}); chatInput.value=''; loadChat(currentOrderId);}
-function logout(){if(confirm('Yakin Logout?')){localStorage.removeItem("pijatin_token");localStorage.removeItem("pijatin_uid");location.reload();}}
+function logout(){
+  try{ Object.keys(localStorage).forEach(k=>{ if(k.startsWith('pijatin_')) localStorage.removeItem(k); }); sessionStorage.clear(); }catch(e){}
+  try{
+    let nav=document.querySelector('.nav'); if(nav) nav.style.display='none';
+    document.getElementById('headerApp').style.display='none';
+    document.getElementById('headerLogin').style.display='flex';
+    closeSidebar(); showLogin();
+  }catch(e){ window.location.href=window.location.href.split('?')[0]; }
+  }
 (function(){if(localStorage.getItem("pijatin_uid")){idToken=localStorage.getItem("pijatin_token");uid=localStorage.getItem("pijatin_uid");masukApp();}})();
 </script></body></html>
