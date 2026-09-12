@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- FIX APK: izin wajib biar Pilih File & Internet jalan -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="PijatIN RumahAja"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-        android:name=".MainActivity"
-        android:theme="@style/SplashTheme"
-        android:exported="true">
-       <intent-filter>
+            android:name=".MainActivity"
+            android:theme="@style/SplashTheme"
+            android:exported="true">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
